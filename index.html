@@ -1,10 +1,26 @@
 <!doctype html>
 <html>
 <head>
-       <title>Forgotten Treasure 2</title>
-       <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-       <meta id="gameViewport" name="viewport" content="width=device-width initial-scale=1 shrink-to-fit=no user-scalable=no viewport-fit=cover">
-       <link href="styles.css" rel="stylesheet" type="text/css">
+    <title>Forgotten Treasure 2</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta id="gameViewport" name="viewport"
+          content="width=device-width initial-scale=1 shrink-to-fit=no user-scalable=no viewport-fit=cover">
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <script src="howler.js"></script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103959306', 'ym');
+
+        ym(103959306, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103959306" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
 </head>
 
 <body>
@@ -13,16 +29,31 @@
 -->
 <div align="center" id="embed-html"></div>
 <script type="text/javascript" src="html/html.nocache.js"></script>
-<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 
 <script type="module">
 
               const urlParams = new URLSearchParams(window.location.search);
               const player_id = urlParams.get('viewer_id');
+              const userLang = urlParams.get('lang');
 
-              window.InitVkWebApp = function initVkWebApp() {
+              window.playerAuthorized = false;
+              var player;
+              var player_unique_id;
+
+              window.AdOnScreen = false;
+
+              window.SendConversionEvent = function sendConversionEvent(description) {
+                      ym(103959306,'reachGoal','conversion',{desc: description});
+                }
+
+                window.InitVkWebApp = function initVkWebApp() {
+                    window.InitVkBridge();
+                }
+
+                window.InitVkBridge = function initVkBridge() {
                      vkBridge.send('VKWebAppInit')
                               .then((data) => {
+                                window.OnInitializedVkBridge();
                                 if (data.result) {
                                   // Приложение инициализировано
                                   vkBridge.send('VKWebAppGetClientVersion')
@@ -57,72 +88,202 @@
                               });
               }
 
-              window.InitVkWebApp();
+              window.OnReady = function onReady() {
+                    // Устанавливаем флаги сложности
+                    window.OnFlagsReceived(0.8, 0.1, 1);
+              }
+              window.CheckPlayerDataOnSite = function checkPlayerDataOnSite() {}
+              window.FetchPlayerData = function fetchPlayerData() {
+                try {
+                    vkBridge.send("VKWebAppStorageGet", {"keys": ["total_levels",
+                                                           "item_0", "item_1", "item_2", "item_3", "item_4",
+                                                           "ads_removed", "level_pack_0","level_pack_1","level_pack_2","level_pack_3","level_pack_4","level_pack_5","level_pack_6","level_pack_7"]})
+                           .then(data => {
+                                var resultString = "total_levels:" + (data.keys[0].value != null ? data.keys[0].value : "0") + ","
+                                                   + "item_0:" + (data.keys[1].value != null ? data.keys[1].value : "0") + ","
+                                                   + "item_1:" + (data.keys[2].value != null ? data.keys[2].value : "0") + ","
+                                                   + "item_2:" + (data.keys[3].value != null ? data.keys[3].value : "0") + ","
+                                                   + "item_3:" + (data.keys[4].value != null ? data.keys[4].value : "0") + ","
+                                                   + "item_4:" + (data.keys[5].value != null ? data.keys[5].value : "0") + ","
+                                                   + "ads_removed:" + (data.keys[6].value != null ? data.keys[6].value : "0") + ","
+                                                   + "level_pack_0:" + (data.keys[7].value != null ? data.keys[7].value : "0") + ","
+                                                   + "level_pack_1:" + (data.keys[8].value != null ? data.keys[8].value : "0") + ","
+                                                   + "level_pack_2:" + (data.keys[9].value != null ? data.keys[9].value : "0") + ","
+                                                   + "level_pack_3:" + (data.keys[10].value != null ? data.keys[10].value : "0") + ","
+                                                   + "level_pack_4:" + (data.keys[11].value != null ? data.keys[11].value : "0") + ","
+                                                   + "level_pack_5:" + (data.keys[12].value != null ? data.keys[12].value : "0") + ","
+                                                   + "level_pack_6:" + (data.keys[13].value != null ? data.keys[13].value : "0") + ","
+                                                   + "level_pack_7:" + (data.keys[14].value != null ? data.keys[14].value : "0");
+                                console.log("Fetched player data from storage: " + resultString);
+                                window.OnPlayerDataLoaded(resultString);
+                                })
+                           .catch(error => console.log(error));
+                     } catch (error) {
+                             logEvent(analytics, 'error', {error_description: "error_get_key"});
+                     }
+                }
+                window.SetKey = function setKey(k, v) {
+                         vkBridge.send("VKWebAppStorageSet", {
+                            key: k,
+                            value: v
+                         });
+                    }
+                window.SetPlayerData = function setPlayerData(
+                       p_total_levels, p_level_pack_0, p_level_pack_1,
+                                   p_level_pack_2, p_level_pack_3, p_level_pack_4,
+                                   p_level_pack_5, p_level_pack_6, p_level_pack_7,
+                                   p_item_0, p_item_1, p_item_2, p_item_3, p_item_4, p_ads_disabled) {
+                        window.SetKey("total_levels", "" + p_total_levels);
+                        window.SetKey("level_pack_0", "" + p_level_pack_0);
+                        window.SetKey("level_pack_1", "" + p_level_pack_1);
+                        window.SetKey("level_pack_2", "" + p_level_pack_2);
+                        window.SetKey("level_pack_3", "" + p_level_pack_3);
+                        window.SetKey("level_pack_4", "" + p_level_pack_4);
+                        window.SetKey("level_pack_5", "" + p_level_pack_5);
+                        window.SetKey("level_pack_6", "" + p_level_pack_6);
+                        window.SetKey("level_pack_7", "" + p_level_pack_7);
+                        window.SetKey("item_0", "" + p_item_0);
+                        window.SetKey("item_1", "" + p_item_1);
+                        window.SetKey("item_2", "" + p_item_2);
+                        window.SetKey("item_3", "" + p_item_3);
+                        window.SetKey("item_4", "" + p_item_4);
+                        window.SetKey("ads_removed", "" + p_ads_removed);
+                }
 
+                window.InitInapps = function initInapps() {
+                        window.OnLoadedInapp("disable_ad", "3");
+                        window.OnLoadedInapp("gold_a", "3");
+                        window.OnLoadedInapp("gold_b", "6");
+                        window.OnLoadedInapp("gold_c", "9");
+                        window.OnLoadedInapp("gold_d", "15");
+                        window.OnLoadedInapp("gold_e", "30");
+                        window.OnLoadedInapp("gold_f", "45");
+                        window.OnLoadedInapp("continue_with_bonus", "1");
+                        window.OnLoadedInapp("crystal_pass_inapp", "5");
+                    }
+
+              window.OnInitializedVkBridge = function onInitializedVkBridge() {
+                    console.log("VK Bridge Initialized");
+                    window.LanguageCheck("ru");
+                    window.InitializeAfterYandexInit();
+                    window.InitInapps();
+              }
+              window.PurchaseInapp = function purchaseInapp(itemId) {
+                   window.SendConversionEvent("Attempt buy vk " + itemId);
+                    vkBridge.send("VKWebAppShowOrderBox", {type:"item",item:itemId})
+                           .then(data => {
+                            if(data.success)
+                                window.OnInappBought(itemId);
+                                window.SendConversionEvent("Inapp bought vk " + itemId);
+                            })
+                           .catch(error => console.log(error));
+              }
+              window.CheckNonConsumedInapps = function checkNonConsumedInapps() {}
+              window.InitFlags = function initFlags() {}
+              window.RateGame = function rateGame() {}
               window.ShowInterstitial = function showInterstitial() {
-                     vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"});
-              }
-
-              window.ShowRewarded = function showRewarded() {
-                     vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
-                            .then(data => window.OnRewardedVideoShown(data.result))
-                            .catch(error => console.log(error));
-              }
+                        vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"});
+                    }
+            window.ShowRewarded = function showRewarded() {
+                vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
+                    .then(data => window.OnRewardedVideoShown(data.result))
+                    .catch(error => console.log(error));
+            }
 
               window.BuyInApp = function buyInApp(inapp_id) {
-                     vkBridge.send("VKWebAppShowOrderBox", {type:"item",item:inapp_id})
-                       .then(data => window.OnInAppBought(data.success, inapp_id))
-                       .catch(error => console.log(error));
+
               }
 
-              window.GetKey = function getKey(key) {
-                     vkBridge.send("VKWebAppStorageGet", {"keys": [key]})
-                            .then(data => window.OnGetKey(key, data.keys[0].value))
-                            .catch(error => console.log(error));
-              }
-
-              window.SetKey = function setKey(k, v) {
-                     vkBridge.send("VKWebAppStorageSet", {
-                        key: k,
-                        value: v
-                     });
+               window.GetKey = function getKey(key) {
+                    try {
+                            vkBridge.send("VKWebAppStorageGet", {"keys": [key]})
+                                   .then(data => window.OnGetKey(key, data.keys[0].value))
+                                   .catch(error => console.log(error));
+                     } catch (error) {
+                             logEvent(analytics, 'error', {error_description: "error_get_key"});
+                     }
               }
 
               window.CheckRewarded = function checkRewarded() {
-                     vkBridge.send("VKWebAppCheckNativeAds", {ad_format:"reward"})
-                            .then(data => window.OnRewardedVideoCheck(data.result))
-                            .catch(error => console.log(error));
+
               }
 
               window.CheckInterstitial = function checkInterstitial() {
-                     vkBridge.send("VKWebAppCheckNativeAds", {"ad_format": "interstitial"})
-                            .then(data => console.log(data.result))
-                            .catch(error => console.log(error));
+
               }
 
               window.ShareLevel = function shareLevel(lvl) {
               }
 
               window.SetRecord = function setRecord(lvl) {
-                     vkBridge.send("VKWebAppCallAPIMethod",
-                     {"method": "secure.addAppEvent", "request_id": "set_record",
-                     "params": {
-                            "user_id": player_id,
-                            "activity_id":"1",
-                            "value":lvl
-                            }});
+
               }
 
               window.InviteFriends = function inviteFriends() {
-                     vkBridge.send("VKWebAppShowInviteBox", {})
-                             .then(data => console.log(data.success))
-                             .catch(error => console.log(error));
+
               }
 
               window.ShowRecords = function showRecords(lvl) {
-                     vkBridge.send("VKWebAppShowLeaderBoardBox", {user_result:lvl})
-                            .then(data => console.log(data.success))
-                            .catch(error => console.log(error));
+
+              }
+
+              window.AdOnScreen = false;
+              window.musicState = true;
+              window.musicGameId = "Game";
+              window.musicGamePath = "assets/music/GameTheme.mp3";
+              window.soundId = -1;
+              window.loadedSound = false;
+              window.unlockedSound = false;
+
+              window.musicInstance = new Howl({
+                  src: [window.musicGamePath],
+                  loop: true,
+                  volume: 0.777
+              });
+
+              window.soundId = window.musicInstance.play();
+
+              document.addEventListener("visibilitychange", function() {
+                if (document.visibilityState === 'visible') {
+                     window.PlayBackgroundMusic();
+                } else {
+                     window.StopBackgroundMusic();
+                }
+              });
+
+              window.StopBackgroundMusic = function() {
+                     try {
+                            if(window.musicInstance != null) {
+                                console.log("pause music");
+                                window.musicInstance.mute(true);
+                                }
+                     } catch (e) {
+                        console.log("error stop music " + e);
+                     }
+              }
+
+              window.SetMusicState = function setMusicState(v, vol) {
+                     window.musicState = v;
+                     window.musicVolume = vol;
+                     if(v)
+                            window.PlayBackgroundMusic();
+                     else
+                            window.StopBackgroundMusic();
+              }
+
+              window.PlayBackgroundMusic = function() {
+                       if(window.AdOnScreen)
+                            return;
+                       if(!window.musicState)
+                            return;
+                       try {
+                         if(window.musicInstance != null) {
+                           console.log("play");
+                           window.musicInstance.mute(false);
+                           }
+                       } catch (e) {
+                        console.log("error play music " + e);
+                       }
               }
 
               function handleMouseDown(evt) {
@@ -138,7 +299,8 @@
               document.addEventListener('contextmenu', event => event.preventDefault());
               document.getElementById('embed-html').addEventListener('mousedown', handleMouseDown, false);
               document.getElementById('embed-html').addEventListener('mouseup', handleMouseUp, false);
-       </script>
+
+</script>
 
 </body>
 
