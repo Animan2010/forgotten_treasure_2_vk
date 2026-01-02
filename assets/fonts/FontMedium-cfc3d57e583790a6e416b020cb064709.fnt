@@ -1,5 +1,5 @@
 info face="a_CopperGothCaps Bold" size=45 bold=0 italic=0 charset="" unicode=0 stretchH=100 smooth=1 aa=1 padding=1,1,1,1 spacing=-2,-2
-common lineHeight=40 base=41 scaleW=512 scaleH=512 pages=1 packed=0
+common lineHeight=44 base=41 scaleW=512 scaleH=512 pages=1 packed=0
 page id=0 file="FontMedium.png"
 chars count=144
 char id=0       x=139  y=290  width=22   height=45   xoffset=2    yoffset=-1   xadvance=25   page=0    chnl=0 

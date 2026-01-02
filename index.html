@@ -46,8 +46,23 @@
                       ym(103959306,'reachGoal','conversion',{desc: description});
                 }
 
+              window.SendLogEvent = function sendLogEvent(description) {
+                    try {
+                        if (typeof ym === 'function') {
+                            ym(103959306, 'reachGoal', 'log_event', {
+                                desc: String(description).substring(0, 500)
+                            });
+                        }
+                    } catch (e) {
+                        console.error("YM_SEND_FAIL", e);
+                    }
+                }
+
                 window.InitVkWebApp = function initVkWebApp() {
                     window.InitVkBridge();
+                }
+                window.IsPaymentsAvailable = function isPaymentsAvailable() {
+                    return true;
                 }
 
                 window.InitVkBridge = function initVkBridge() {
@@ -90,7 +105,7 @@
 
               window.OnReady = function onReady() {
                     // Устанавливаем флаги сложности
-                    window.OnFlagsReceived(0.8, 0.1, 1);
+                    window.OnFlagsReceived(0.75, 0.1, 1, 30);
               }
               window.CheckPlayerDataOnSite = function checkPlayerDataOnSite() {}
               window.FetchPlayerData = function fetchPlayerData() {
@@ -113,7 +128,8 @@
                                                    + "level_pack_4:" + (data.keys[11].value != null ? data.keys[11].value : "0") + ","
                                                    + "level_pack_5:" + (data.keys[12].value != null ? data.keys[12].value : "0") + ","
                                                    + "level_pack_6:" + (data.keys[13].value != null ? data.keys[13].value : "0") + ","
-                                                   + "level_pack_7:" + (data.keys[14].value != null ? data.keys[14].value : "0");
+                                                   + "level_pack_7:" + (data.keys[14].value != null ? data.keys[14].value : "0") + ","
+                                                   + "chest_reward_time:" + (data.keys[15].value != null ? data.keys[15].value : "0");
                                 console.log("Fetched player data from storage: " + resultString);
                                 window.OnPlayerDataLoaded(resultString);
                                 })
@@ -132,7 +148,8 @@
                        p_total_levels, p_level_pack_0, p_level_pack_1,
                                    p_level_pack_2, p_level_pack_3, p_level_pack_4,
                                    p_level_pack_5, p_level_pack_6, p_level_pack_7,
-                                   p_item_0, p_item_1, p_item_2, p_item_3, p_item_4, p_ads_disabled) {
+                                   p_item_0, p_item_1, p_item_2, p_item_3, p_item_4, p_ads_disabled,
+                                   p_chest_reward_time) {
                         window.SetKey("total_levels", "" + p_total_levels);
                         window.SetKey("level_pack_0", "" + p_level_pack_0);
                         window.SetKey("level_pack_1", "" + p_level_pack_1);
@@ -148,6 +165,7 @@
                         window.SetKey("item_3", "" + p_item_3);
                         window.SetKey("item_4", "" + p_item_4);
                         window.SetKey("ads_removed", "" + p_ads_disabled);
+                        window.SetKey("chest_reward_time", "" + p_chest_reward_time);
                 }
 
                 window.InitInapps = function initInapps() {
@@ -160,7 +178,15 @@
                         window.OnLoadedInapp("gold_f", "45");
                         window.OnLoadedInapp("continue_with_bonus", "1");
                         window.OnLoadedInapp("crystal_pass_inapp", "5");
+                        window.OnLoadedInapp("adventurer_bonus_bundle", "15");
                     }
+
+              window.IsWebSoundOn = function isSoundOn() {
+                    return true;
+              }
+              window.IsWebMusicOn = function isSoundOn() {
+                    return true;
+              }
 
               window.OnInitializedVkBridge = function onInitializedVkBridge() {
                     console.log("VK Bridge Initialized");
@@ -205,11 +231,15 @@
               }
 
               window.CheckRewarded = function checkRewarded() {
-
+                    return true;
               }
 
               window.CheckInterstitial = function checkInterstitial() {
+                    return true;
+              }
 
+              window.IsAdsAvailable = function isAdsAvailable() {
+                    return true;
               }
 
               window.ShareLevel = function shareLevel(lvl) {

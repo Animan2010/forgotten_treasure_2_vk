@@ -3,7 +3,7 @@ d:fonts:fonts:0:application/unknown:1
 t:fonts/FontLarge.fnt:fonts/FontLarge-1847db046395184769542fb240c64608.fnt:25920:application/unknown:1
 i:fonts/FontLarge1.png:fonts/FontLarge1-79e44ecf1d674320f9368092afc50bef.png:79002:image/png:1
 i:fonts/FontLarge2.png:fonts/FontLarge2-7da375a79fbcdef397520ced96803af5.png:1344:image/png:1
-t:fonts/FontMedium.fnt:fonts/FontMedium-3d4acacf8168e3fa08e3a8e801c07226.fnt:25622:application/unknown:1
+t:fonts/FontMedium.fnt:fonts/FontMedium-cfc3d57e583790a6e416b020cb064709.fnt:25622:application/unknown:1
 i:fonts/FontMedium.png:fonts/FontMedium-2699677e1951b55972e69dbf4102fe35.png:60608:image/png:1
 t:fonts/FontSmall.fnt:fonts/FontSmall-8e195c5d1b1a7e8d448e8c8b1655667a.fnt:25260:application/unknown:1
 i:fonts/FontSmall.png:fonts/FontSmall-5d9ebb68a6bcb14a36bb6fd416c3aa24.png:39553:image/png:1
@@ -30,12 +30,13 @@ i:graphics/expeditions/ExpeditionTreasures.png:graphics/expeditions/ExpeditionTr
 i:graphics/Gems.png:graphics/Gems-a7ad3d138c8aaa4e44aed8c9850886e3.png:177502:image/png:1
 i:graphics/GemsB.png:graphics/GemsB-e2e4ae51b2dbe3364d94cb63ced92a80.png:76055:image/png:1
 i:graphics/GemsC.png:graphics/GemsC-cb56e384675c7d1827d5cc4d2f9c411a.png:100102:image/png:1
+i:graphics/icon.png:graphics/icon-f9bb1fb4cb310924c37c40b0fa1ae726.png:120485:image/png:1
 i:graphics/InterfaceA.png:graphics/InterfaceA-b1fb1934cb4d7085b100d497288d9a2c.png:126826:image/png:1
 i:graphics/InterfaceB.png:graphics/InterfaceB-498f6bd0fc1e84e2b97416f243106f1c.png:81769:image/png:1
 i:graphics/InterfaceC.png:graphics/InterfaceC-edf66d33c64695179652843635426e54.png:92469:image/png:1
 i:graphics/InterfaceChristmas.png:graphics/InterfaceChristmas-3d89a35d86bd2ae118df01c859b79fc5.png:121239:image/png:1
-i:graphics/InterfaceD.png:graphics/InterfaceD-3e4bae98dfe296c53e02c91e17246a1b.png:95563:image/png:1
-i:graphics/InterfaceF.png:graphics/InterfaceF-026ec7c1c963c4140c716d661f9fc246.png:60300:image/png:1
+i:graphics/InterfaceD.png:graphics/InterfaceD-0eae576fd17908a934c37895db4c37eb.png:186641:image/png:1
+i:graphics/InterfaceF.png:graphics/InterfaceF-73555c5913c9fca3681c8dad8c53eb06.png:110099:image/png:1
 i:graphics/InterfaceH.png:graphics/InterfaceH-8e87fcf2c601ca5a023f8532c3e88af5.png:165816:image/png:1
 i:graphics/InterfacePearls.png:graphics/InterfacePearls-4d3ac45b235a08f3881618f6f212edbf.png:88173:image/png:1
 i:graphics/RelicsA.png:graphics/RelicsA-46f92d044ab7dadeac2f1dcbd17bfd6d.png:200601:image/png:1
@@ -46,8 +47,8 @@ i:graphics/TreasuresB.png:graphics/TreasuresB-4792cc0a280a3db1750ccee02a8c9c6f.p
 i:graphics/TreasuresPartsA.png:graphics/TreasuresPartsA-6b5ad4186e075d7e7c8e0d2afbaa2b88.png:133248:image/png:1
 i:graphics/TreasuresPartsB.png:graphics/TreasuresPartsB-763aabe8b6c9a7db5793c3abdf04963e.png:125925:image/png:1
 d:music:music:0:application/unknown:1
-a:music/GameTheme.mp3:music/GameTheme-58ac76d3da6ed83da8a4d7996ca560ee.mp3:1789934:application/unknown:1
-a:music/MenuTheme.mp3:music/MenuTheme-b186a2d9dea62218d4de9ae80b9bcc13.mp3:1370593:application/unknown:1
+a:music/GameTheme.mp3:music/GameTheme-58ac76d3da6ed83da8a4d7996ca560ee.mp3:1789934:application/unknown:0
+a:music/MenuTheme.mp3:music/MenuTheme-b186a2d9dea62218d4de9ae80b9bcc13.mp3:1370593:application/unknown:0
 d:particles:particles:0:application/unknown:1
 b:particles/Gem.pt:particles/Gem-c05d644ddcb836b11db6496c58d0de4c.pt:2337:application/unknown:1
 b:particles/GemNew.pt:particles/GemNew-b3296391f71b5265599042b5ecbd6960.pt:2472:application/unknown:1
