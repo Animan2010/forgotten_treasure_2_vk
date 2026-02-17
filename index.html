@@ -74,6 +74,7 @@
 
     window.InitVkWebApp = function initVkWebApp() {
         window.InitVkBridge();
+        window.OnReady();
     }
 
     window.InitVkBridge = function initVkBridge() {
@@ -117,7 +118,7 @@
   window.OnReady = function onReady() {
         // Устанавливаем флаги сложности
         if(typeof window.OnFlagsReceived === "function") {
-            window.OnFlagsReceived(0.76, 0.2, 0, 30, 0);
+            window.OnFlagsReceived(0.76, 0.2, 0, 60, 0);
             window.SendLogEvent("on_ready_called");
         } else {
             window.SendLogEvent("on_ready_no_handler");
@@ -231,11 +232,11 @@
   window.ShowInterstitial = function showInterstitial() {
             vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"});
         }
-window.ShowRewarded = function showRewarded() {
-    vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
-        .then(data => window.OnRewardedVideoShown(data.result))
-        .catch(error => console.log(error));
-}
+    window.ShowRewarded = function showRewarded() {
+        vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
+            .then(data => window.OnRewardedVideoShown(data.result))
+            .catch(error => console.log(error));
+    }
 
   window.BuyInApp = function buyInApp(inapp_id) {
 
