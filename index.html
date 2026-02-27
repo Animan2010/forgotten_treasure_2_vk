@@ -79,6 +79,7 @@
 
     window.HideBanner = function hideBanner() {
         try {
+            console.log("Try hide banner");
             vkBridge.send('VKWebAppHideBannerAd')
               .then((data) => {
                 if (data.result) {
