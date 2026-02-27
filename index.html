@@ -95,6 +95,10 @@
         }
     }
 
+    window.LogConsole = function logConsole(message) {
+        console.log(message);
+    }
+
     window.InitVkBridge = function initVkBridge() {
          vkBridge.send('VKWebAppInit')
                   .then((data) => {
@@ -156,7 +160,7 @@
                                        + "item_2:" + (data.keys[3].value != null ? data.keys[3].value : "0") + ","
                                        + "item_3:" + (data.keys[4].value != null ? data.keys[4].value : "0") + ","
                                        + "item_4:" + (data.keys[5].value != null ? data.keys[5].value : "0") + ","
-                                       + "ads_removed:" + (data.keys[6].value != null ? data.keys[6].value : "0") + ","
+                                       + "ads_disabled:" + (data.keys[6].value != null ? data.keys[6].value : "0") + ","
                                        + "level_pack_0:" + (data.keys[7].value != null ? data.keys[7].value : "0") + ","
                                        + "level_pack_1:" + (data.keys[8].value != null ? data.keys[8].value : "0") + ","
                                        + "level_pack_2:" + (data.keys[9].value != null ? data.keys[9].value : "0") + ","
