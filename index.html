@@ -77,6 +77,23 @@
         window.OnReady();
     }
 
+    window.HideBanner = function hideBanner() {
+        try {
+            vkBridge.send('VKWebAppHideBannerAd')
+              .then((data) => {
+                if (data.result) {
+                  // Баннерная реклама скрыта
+                }
+              })
+              .catch((error) => {
+                // Ошибка
+                console.log(error);
+              });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     window.InitVkBridge = function initVkBridge() {
          vkBridge.send('VKWebAppInit')
                   .then((data) => {
@@ -85,11 +102,12 @@
                       // Приложение инициализировано
                       vkBridge.send('VKWebAppGetClientVersion')
                          .then((data) => {
-                           if (data.platform === "web" || data.platform === "universal_web") {
+                           if (true || data.platform === "web" || data.platform === "universal_web") {
                              // Данные пользователя получены
                              vkBridge.send('VKWebAppShowBannerAd', {
-                         banner_location: 'bottom'
-                         })
+                                 banner_location: 'bottom',
+                                 height_type: 'compact'
+                             })
                         .then((data) => {
                            if (data.result) {
                              // Баннерная реклама отобразилась
@@ -118,7 +136,7 @@
   window.OnReady = function onReady() {
         // Устанавливаем флаги сложности
         if(typeof window.OnFlagsReceived === "function") {
-            window.OnFlagsReceived(0.76, 0.2, 0, 60, 0);
+            window.OnFlagsReceived(0.8, 0.1, 0, 60, 1, 3);
             window.SendLogEvent("on_ready_called");
         } else {
             window.SendLogEvent("on_ready_no_handler");

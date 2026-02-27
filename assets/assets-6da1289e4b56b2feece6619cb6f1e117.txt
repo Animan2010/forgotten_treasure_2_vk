@@ -40,12 +40,14 @@ graphics/backgrounds/BackgroundSummer.jpg
 graphics/backgrounds/BackgroundWinter.jpg
 graphics/expeditions/ExpeditionTreasures.png
 graphics/icon.png
+graphics/offers/OfferContinueLevel.png
 music/GameTheme.mp3
 music/MenuTheme.mp3
 particles/Gem.pt
 particles/GemNew.pt
 particles/Splash.pt
 particles/SplashNew.pt
+particles/SplashWeak.pt
 particles/particle.png
 shaders/ColorBonus.frag
 shaders/ColorBonus.vert
