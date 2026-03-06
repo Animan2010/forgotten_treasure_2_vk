@@ -141,7 +141,7 @@
   window.OnReady = function onReady() {
         // Устанавливаем флаги сложности
         if(typeof window.OnFlagsReceived === "function") {
-            window.OnFlagsReceived(0.84, 0.01, 1, 60, 1, 10);
+            window.OnFlagsReceived(0.82, 0.05, 0, 60, 1, 12);
             window.SendLogEvent("on_ready_called");
         } else {
             window.SendLogEvent("on_ready_no_handler");
