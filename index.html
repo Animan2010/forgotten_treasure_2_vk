@@ -141,14 +141,20 @@
   window.OnReady = function onReady() {
         // Устанавливаем флаги сложности
         if(typeof window.OnFlagsReceived === "function") {
-            window.OnFlagsReceived(0.75, 0.1, 1, 60, 1, 0);
+            window.OnFlagsReceived(0.78, 0.1, 1, 60, 1, 30);
             window.SendLogEvent("on_ready_called");
         } else {
             window.SendLogEvent("on_ready_no_handler");
         }
+        window.CheckInterstitial();
+        window.CheckRewarded();
   }
   window.CheckPlayerDataOnSite = function checkPlayerDataOnSite() {}
   window.FetchPlayerData = function fetchPlayerData() {
+      //if (window.location.href.includes("exclusive-art")) {
+      //      console.log("reset data");
+      //      return;
+      //  }
     try {
         vkBridge.send("VKWebAppStorageGet", {"keys": ["total_levels",
                                                "item_0", "item_1", "item_2", "item_3", "item_4",
@@ -253,12 +259,39 @@
   window.InitFlags = function initFlags() {}
   window.RateGame = function rateGame() {}
   window.ShowInterstitial = function showInterstitial() {
-            vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"});
+            vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"}).then( (data) => {
+                if (data.result) {
+                  // Реклама была показана
+                  window.CheckInterstitial();
+                  window.SendConversionEvent("Show interstitial");
+                  console.log("Successfully show interstitial");
+                } else {
+                  // Ошибка
+                  window.CheckInterstitial();
+                  window.SendLogEvent("Failed show interstitial");
+                  console.log("Error show interstitial");
+                }
+              });
         }
     window.ShowRewarded = function showRewarded() {
-        vkBridge.send("VKWebAppShowNativeAds", {ad_format:"reward"})
-            .then(data => window.OnRewardedVideoShown(data.result))
-            .catch(error => console.log(error));
+        vkBridge.send('VKWebAppShowNativeAds', {
+          ad_format: 'reward' /* Тип рекламы */
+          })
+          .then( (data) => {
+            if (data.result) {
+              // Реклама была показана
+                  window.OnRewardedVideoShown(true);
+                  window.CheckRewarded();
+                  window.SendConversionEvent("Show rewarded");
+                  console.log("Successfully show rewarded");
+            } else {
+              // Ошибка
+                  window.CheckRewarded();
+                  window.SendLogEvent("Failed show rewarded");
+                  console.log("Error show rewarded");
+            }
+          })
+          .catch((error) => { console.log(error); });
     }
 
   window.BuyInApp = function buyInApp(inapp_id) {
@@ -276,10 +309,44 @@
   }
 
   window.CheckRewarded = function checkRewarded() {
+        try {
+            vkBridge.send('VKWebAppCheckNativeAds', {
+              ad_format: 'reward' /* Тип рекламы */
+              })
+              .then((data) => {
+                if (data.result) {
+                  console.log("rewarded ad available");
+                  // Предзагруженные материалы есть
+                } else {
+                  // Материалов нет
+                  console.log("no rewarded ad");
+                }
+              })
+          .catch((error) => { console.log(error); });
+          } catch (error) {
+            console.log(error);
+          }
         return true;
   }
 
   window.CheckInterstitial = function checkInterstitial() {
+        try {
+            vkBridge.send('VKWebAppCheckNativeAds', {
+              ad_format: 'interstitial' /* Тип рекламы */
+              })
+              .then((data) => {
+                if (data.result) {
+                  console.log("interstitial ad available");
+                  // Предзагруженные материалы есть
+                } else {
+                  // Материалов нет
+                  console.log("no interstitial ad");
+                }
+              })
+          .catch((error) => { console.log(error); });
+          } catch (error) {
+            console.log(error);
+          }
         return true;
   }
 
@@ -402,7 +469,7 @@
   document.getElementById('embed-html').addEventListener('mousedown', handleMouseDown, false);
   document.getElementById('embed-html').addEventListener('mouseup', handleMouseUp, false);
 
-    window.SendLogEvent("script_fully_loaded");
+  window.SendLogEvent("script_fully_loaded");
 
 </script>
 
