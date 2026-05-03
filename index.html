@@ -107,7 +107,7 @@
                       // Приложение инициализировано
                       vkBridge.send('VKWebAppGetClientVersion')
                          .then((data) => {
-                           if (true || data.platform === "web" || data.platform === "universal_web") {
+                           if (data.platform === "web" || data.platform === "universal_web") {
                              // Данные пользователя получены
                              vkBridge.send('VKWebAppShowBannerAd', {
                                  banner_location: 'bottom',
