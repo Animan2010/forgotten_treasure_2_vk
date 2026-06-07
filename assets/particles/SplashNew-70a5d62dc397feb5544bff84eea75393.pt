@@ -6,7 +6,7 @@ lowMin: 100.0
 lowMax: 100.0
 - Count - 
 min: 10
-max: 30
+max: 20
 - Emission - 
 lowMin: 500.0
 lowMax: 500.0
@@ -150,7 +150,7 @@ timeline3: 1.0
 attached: false
 continuous: false
 aligned: false
-additive: true
+additive: false
 behind: false
 premultipliedAlpha: false
 spriteMode: single

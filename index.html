@@ -78,6 +78,8 @@
     }
 
     window.HideBanner = function hideBanner() {
+        if (typeof vkBridge === 'undefined')
+            return;
         try {
             console.log("Try hide banner");
             vkBridge.send('VKWebAppHideBannerAd')
@@ -100,48 +102,48 @@
     }
 
     window.InitVkBridge = function initVkBridge() {
-         vkBridge.send('VKWebAppInit')
-                  .then((data) => {
-                    window.OnInitializedVkBridge();
-                    if (data.result) {
-                      // Приложение инициализировано
-                      vkBridge.send('VKWebAppGetClientVersion')
-                         .then((data) => {
-                           if (data.platform === "web" || data.platform === "universal_web") {
-                             // Данные пользователя получены
-                             vkBridge.send('VKWebAppShowBannerAd', {
-                                 banner_location: 'bottom',
-                                 height_type: 'compact'
-                             })
-                        .then((data) => {
-                           if (data.result) {
-                             // Баннерная реклама отобразилась
-                           }
-                         })
-                         .catch((error) => {
-                           // Ошибка
-                           console.log(error);
-                         });
-                           }
-                         })
-                         .catch((error) => {
-                           // Ошибка
-                           console.log(error);
-                         });
-                    } else {
-                      // Ошибка
-                    }
-                  })
-                  .catch((error) => {
-                    // Ошибка
-                    console.log(error);
-                  });
-  }
+        if (typeof vkBridge === 'undefined') return;
+
+        // Подписка на события паузы/резюма
+        vkBridge.subscribe(event => {
+            switch (event.detail.type) {
+                case 'VKWebAppViewHide':
+                    if (typeof window.OnAppPause === "function")
+                        window.OnAppPause();
+                    break;
+                case 'VKWebAppViewRestore':
+                    if (typeof window.OnAppResume === "function")
+                        window.OnAppResume();
+                    break;
+            }
+        });
+
+        vkBridge.send('VKWebAppInit')
+            .then(data => {
+                window.OnInitializedVkBridge();
+
+                if (!data.result) return;
+
+                vkBridge.send('VKWebAppGetClientVersion')
+                    .then(data => {
+                        const isWeb = data.platform === "web" || data.platform === "universal_web";
+                        if (!isWeb) return;
+
+                        vkBridge.send('VKWebAppShowBannerAd', {
+                            banner_location: 'bottom',
+                            height_type: 'compact'
+                        })
+                        .catch(error => console.log("Banner ad error:", error));
+                    })
+                    .catch(error => console.log("GetClientVersion error:", error));
+            })
+            .catch(error => console.log("VKWebAppInit error:", error));
+    }
 
   window.OnReady = function onReady() {
         // Устанавливаем флаги сложности
         if(typeof window.OnFlagsReceived === "function") {
-            window.OnFlagsReceived(0.81, 0.05, 1, 180, 0, 60);
+            window.OnFlagsReceived(0.78, 0.1, 1, 200, 1, 12);
             window.SendLogEvent("on_ready_called");
         } else {
             window.SendLogEvent("on_ready_no_handler");
@@ -151,40 +153,45 @@
   }
   window.CheckPlayerDataOnSite = function checkPlayerDataOnSite() {}
   window.FetchPlayerData = function fetchPlayerData() {
-      //if (window.location.href.includes("exclusive-art")) {
-      //      console.log("reset data");
-      //      return;
-      //  }
+    if (typeof vkBridge === 'undefined') return;
+
+    const KEYS = [
+        "total_levels",
+        "item_0", "item_1", "item_2", "item_3", "item_4",
+        "ads_removed",
+        "level_pack_0", "level_pack_1", "level_pack_2", "level_pack_3",
+        "level_pack_4", "level_pack_5", "level_pack_6", "level_pack_7",
+        "chest_reward_time"
+    ];
+
+    // Маппинг: имя ключа в storage -> имя в resultString
+    const KEY_ALIASES = {
+        "ads_removed": "ads_disabled"
+    };
+
     try {
-        vkBridge.send("VKWebAppStorageGet", {"keys": ["total_levels",
-                                               "item_0", "item_1", "item_2", "item_3", "item_4",
-                                               "ads_removed", "level_pack_0","level_pack_1","level_pack_2","level_pack_3","level_pack_4","level_pack_5","level_pack_6","level_pack_7", "chest_reward_time"]})
-               .then(data => {
-                    var resultString = "total_levels:" + (data.keys[0].value != null ? data.keys[0].value : "0") + ","
-                                       + "item_0:" + (data.keys[1].value != null ? data.keys[1].value : "0") + ","
-                                       + "item_1:" + (data.keys[2].value != null ? data.keys[2].value : "0") + ","
-                                       + "item_2:" + (data.keys[3].value != null ? data.keys[3].value : "0") + ","
-                                       + "item_3:" + (data.keys[4].value != null ? data.keys[4].value : "0") + ","
-                                       + "item_4:" + (data.keys[5].value != null ? data.keys[5].value : "0") + ","
-                                       + "ads_disabled:" + (data.keys[6].value != null ? data.keys[6].value : "0") + ","
-                                       + "level_pack_0:" + (data.keys[7].value != null ? data.keys[7].value : "0") + ","
-                                       + "level_pack_1:" + (data.keys[8].value != null ? data.keys[8].value : "0") + ","
-                                       + "level_pack_2:" + (data.keys[9].value != null ? data.keys[9].value : "0") + ","
-                                       + "level_pack_3:" + (data.keys[10].value != null ? data.keys[10].value : "0") + ","
-                                       + "level_pack_4:" + (data.keys[11].value != null ? data.keys[11].value : "0") + ","
-                                       + "level_pack_5:" + (data.keys[12].value != null ? data.keys[12].value : "0") + ","
-                                       + "level_pack_6:" + (data.keys[13].value != null ? data.keys[13].value : "0") + ","
-                                       + "level_pack_7:" + (data.keys[14].value != null ? data.keys[14].value : "0") + ","
-                                       + "chest_reward_time:" + (data.keys[15].value != null ? data.keys[15].value : "0");
-                    console.log("Fetched player data from storage: " + resultString);
-                    window.OnPlayerDataLoaded(resultString);
-                    })
-               .catch(error => console.log(error));
-         } catch (error) {
-                 logEvent(analytics, 'error', {error_description: "error_get_key"});
-         }
+        vkBridge.send("VKWebAppStorageGet", { keys: KEYS })
+            .then(data => {
+                const storage = {};
+                data.keys.forEach(entry => {
+                    storage[entry.key] = (entry.value != null && entry.value !== "") ? entry.value : "0";
+                });
+
+                const resultString = KEYS.map(key => {
+                    const alias = KEY_ALIASES[key] || key;
+                    return `${alias}:${storage[key] ?? "0"}`;
+                }).join(",");
+
+                console.log("Fetched player data from storage: " + resultString);
+                window.OnPlayerDataLoaded(resultString);
+            })
+            .catch(error => console.log(error));
+    } catch (error) {
+        logEvent(analytics, 'error', { error_description: "error_get_key" });
     }
+}
     window.SetKey = function setKey(k, v) {
+            if (typeof vkBridge === 'undefined') return;
              vkBridge.send("VKWebAppStorageSet", {
                 key: k,
                 value: v
@@ -245,6 +252,7 @@
         window.SendLogEvent("initialized_vk_bridge");
   }
   window.PurchaseInapp = function purchaseInapp(itemId) {
+            if (typeof vkBridge === 'undefined') return;
        window.SendConversionEvent("Attempt buy vk " + itemId);
         vkBridge.send("VKWebAppShowOrderBox", {type:"item",item:itemId})
                .then(data => {
@@ -259,6 +267,7 @@
   window.InitFlags = function initFlags() {}
   window.RateGame = function rateGame() {}
   window.ShowInterstitial = function showInterstitial() {
+            if (typeof vkBridge === 'undefined') return;
             vkBridge.send("VKWebAppShowNativeAds", {"ad_format": "interstitial"}).then( (data) => {
                 if (data.result) {
                   // Реклама была показана
@@ -274,6 +283,7 @@
               });
         }
     window.ShowRewarded = function showRewarded() {
+            if (typeof vkBridge === 'undefined') return;
         vkBridge.send('VKWebAppShowNativeAds', {
           ad_format: 'reward' /* Тип рекламы */
           })
@@ -299,6 +309,7 @@
   }
 
    window.GetKey = function getKey(key) {
+            if (typeof vkBridge === 'undefined') return;
         try {
                 vkBridge.send("VKWebAppStorageGet", {"keys": [key]})
                        .then(data => window.OnGetKey(key, data.keys[0].value))
@@ -309,6 +320,7 @@
   }
 
   window.CheckRewarded = function checkRewarded() {
+            if (typeof vkBridge === 'undefined') return;
         try {
             vkBridge.send('VKWebAppCheckNativeAds', {
               ad_format: 'reward' /* Тип рекламы */
@@ -330,6 +342,7 @@
   }
 
   window.CheckInterstitial = function checkInterstitial() {
+            if (typeof vkBridge === 'undefined') return;
         try {
             vkBridge.send('VKWebAppCheckNativeAds', {
               ad_format: 'interstitial' /* Тип рекламы */

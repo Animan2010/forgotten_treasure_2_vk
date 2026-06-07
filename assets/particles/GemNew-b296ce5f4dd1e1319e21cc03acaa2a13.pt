@@ -5,8 +5,8 @@ active: false
 lowMin: 50.0
 lowMax: 100.0
 - Count - 
-min: 20
-max: 40
+min: 10
+max: 25
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -152,7 +152,7 @@ timeline3: 1.0
 attached: false
 continuous: false
 aligned: false
-additive: true
+additive: false
 behind: false
 premultipliedAlpha: false
 spriteMode: single
